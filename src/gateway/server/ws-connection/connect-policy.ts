@@ -36,11 +36,19 @@ export function shouldSkipControlUiPairing(
   policy: ControlUiAuthPolicy,
   sharedAuthOk: boolean,
   trustedProxyAuthOk = false,
+  tailscaleAuthOk = false,
 ): boolean {
   if (trustedProxyAuthOk) {
     return true;
   }
-  return policy.allowBypass && sharedAuthOk;
+// When the connection was authenticated via Tailscale identity, the Tailscale
+// network has already vouched for the user. Requiring a separate device
+// pairing round-trip adds no security benefit and is confusing to operators
+// who set allowTailscale: true expecting seamless Control UI access.
+if (tailscaleAuthOk) {
+return true; 
+}  
+   return policy.allowBypass && sharedAuthOk;
 }
 
 export function isTrustedProxyControlUiOperatorAuth(params: {
