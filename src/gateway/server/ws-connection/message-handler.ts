@@ -268,7 +268,7 @@ export function attachGatewayWsMessageHandler(params: {
   logHealth: SubsystemLogger;
   logWsControl: SubsystemLogger;
 }) {
-   {
+const {
     socket,
     upgradeReq,
     connId,
