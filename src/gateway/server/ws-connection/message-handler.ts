@@ -62,7 +62,7 @@ import {
   validateRequestFrame,
 } from "../../protocol/index.js";
 import { parseGatewayRole } from "../../role-policy.js";
-import { MAX_BUFFERED_BYTES, MAX_PAYLOAD_BYTES, TICK_INTERVAL_MS } from "../../server-constants.js";
+import { MAX_BUFFERED_BYTES, MAX_PAYLOAD_BYTES, TICK_INTERVAL_MS } from "../../server-ants.js";
 import { handleGatewayRequest } from "../../server-methods.js";
 import type { GatewayRequestContext, GatewayRequestHandlers } from "../../server-methods/types.js";
 import { formatError } from "../../server-utils.js";
@@ -88,8 +88,8 @@ import { isUnauthorizedRoleError, UnauthorizedFloodGuard } from "./unauthorized-
 
 type SubsystemLogger = ReturnType<typeof createSubsystemLogger>;
 
-const DEVICE_SIGNATURE_SKEW_MS = 2 * 60 * 1000;
-const BROWSER_ORIGIN_LOOPBACK_RATE_LIMIT_IP = "198.18.0.1";
+ DEVICE_SIGNATURE_SKEW_MS = 2 * 60 * 1000;
+ BROWSER_ORIGIN_LOOPBACK_RATE_LIMIT_IP = "198.18.0.1";
 
 export type WsOriginCheckMetrics = {
   hostHeaderFallbackAccepted: number;
@@ -109,7 +109,7 @@ function resolveHandshakeBrowserSecurityContext(params: {
   rateLimiter?: AuthRateLimiter;
   browserRateLimiter?: AuthRateLimiter;
 }): HandshakeBrowserSecurityContext {
-  const hasBrowserOriginHeader = Boolean(
+   hasBrowserOriginHeader = Boolean(
     params.requestOrigin && params.requestOrigin.trim() !== "",
   );
   return {
@@ -147,13 +147,13 @@ function shouldSkipBackendSelfPairing(params: {
   sharedAuthOk: boolean;
   authMethod: GatewayAuthResult["method"];
 }): boolean {
-  const isGatewayBackendClient =
+   isGatewayBackendClient =
     params.connectParams.client.id === GATEWAY_CLIENT_IDS.GATEWAY_CLIENT &&
     params.connectParams.client.mode === GATEWAY_CLIENT_MODES.BACKEND;
   if (!isGatewayBackendClient) {
     return false;
   }
-  const usesSharedSecretAuth = params.authMethod === "token" || params.authMethod === "password";
+   usesSharedSecretAuth = params.authMethod === "token" || params.authMethod === "password";
   return (
     params.isLocalClient &&
     !params.hasBrowserOriginHeader &&
@@ -174,7 +174,7 @@ function resolveDeviceSignaturePayloadVersion(params: {
   signedAtMs: number;
   nonce: string;
 }): "v3" | "v2" | null {
-  const payloadV3 = buildDeviceAuthPayloadV3({
+   payloadV3 = buildDeviceAuthPayloadV3({
     deviceId: params.device.id,
     clientId: params.connectParams.client.id,
     clientMode: params.connectParams.client.mode,
@@ -190,7 +190,7 @@ function resolveDeviceSignaturePayloadVersion(params: {
     return "v3";
   }
 
-  const payloadV2 = buildDeviceAuthPayload({
+   payloadV2 = buildDeviceAuthPayload({
     deviceId: params.device.id,
     clientId: params.connectParams.client.id,
     clientMode: params.connectParams.client.mode,
@@ -217,14 +217,14 @@ function resolvePinnedClientMetadata(params: {
   pinnedPlatform?: string;
   pinnedDeviceFamily?: string;
 } {
-  const claimedPlatform = normalizeDeviceMetadataForAuth(params.claimedPlatform);
-  const claimedDeviceFamily = normalizeDeviceMetadataForAuth(params.claimedDeviceFamily);
-  const pairedPlatform = normalizeDeviceMetadataForAuth(params.pairedPlatform);
-  const pairedDeviceFamily = normalizeDeviceMetadataForAuth(params.pairedDeviceFamily);
-  const hasPinnedPlatform = pairedPlatform !== "";
-  const hasPinnedDeviceFamily = pairedDeviceFamily !== "";
-  const platformMismatch = hasPinnedPlatform && claimedPlatform !== pairedPlatform;
-  const deviceFamilyMismatch = hasPinnedDeviceFamily && claimedDeviceFamily !== pairedDeviceFamily;
+   claimedPlatform = normalizeDeviceMetadataForAuth(params.claimedPlatform);
+   claimedDeviceFamily = normalizeDeviceMetadataForAuth(params.claimedDeviceFamily);
+   pairedPlatform = normalizeDeviceMetadataForAuth(params.pairedPlatform);
+   pairedDeviceFamily = normalizeDeviceMetadataForAuth(params.pairedDeviceFamily);
+   hasPinnedPlatform = pairedPlatform !== "";
+   hasPinnedDeviceFamily = pairedDeviceFamily !== "";
+   platformMismatch = hasPinnedPlatform && claimedPlatform !== pairedPlatform;
+   deviceFamilyMismatch = hasPinnedDeviceFamily && claimedDeviceFamily !== pairedDeviceFamily;
   return {
     platformMismatch,
     deviceFamilyMismatch,
@@ -268,7 +268,7 @@ export function attachGatewayWsMessageHandler(params: {
   logHealth: SubsystemLogger;
   logWsControl: SubsystemLogger;
 }) {
-  const {
+   {
     socket,
     upgradeReq,
     connId,
@@ -302,7 +302,7 @@ export function attachGatewayWsMessageHandler(params: {
     logWsControl,
   } = params;
 
-  const configSnapshot = loadConfig();
+   configSnapshot = loadConfig();
   const trustedProxies = configSnapshot.gateway?.trustedProxies ?? [];
   const allowRealIpFallback = configSnapshot.gateway?.allowRealIpFallback === true;
   const clientIp = resolveClientIp({
@@ -780,7 +780,7 @@ export function attachGatewayWsMessageHandler(params: {
           authOk,
           authMethod,
         });
-        const tailscaleAuthOk = authOk && authMethod === "tailscale";
+        const tailscaleAuthOk = isControlUi && authOk && authMethod === "tailscale";
         const skipPairing =
           shouldSkipBackendSelfPairing({
             connectParams,
