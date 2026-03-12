@@ -780,6 +780,7 @@ export function attachGatewayWsMessageHandler(params: {
           authOk,
           authMethod,
         });
+        const tailscaleAuthOk = authOk && authMethod === "tailscale";
         const skipPairing =
           shouldSkipBackendSelfPairing({
             connectParams,
@@ -787,7 +788,7 @@ export function attachGatewayWsMessageHandler(params: {
             hasBrowserOriginHeader,
             sharedAuthOk,
             authMethod,
-          }) || shouldSkipControlUiPairing(controlUiAuthPolicy, sharedAuthOk, trustedProxyAuthOk);
+          }) || shouldSkipControlUiPairing(controlUiAuthPolicy, sharedAuthOk, trustedProxyAuthOk, tailscaleAuthOk);
         if (device && devicePublicKey && !skipPairing) {
           const formatAuditList = (items: string[] | undefined): string => {
             if (!items || items.length === 0) {
